@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Management System</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+        }
+
+        header {
+            background-color: #0056b3;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            letter-spacing: 1px;
+        }
+
+        .form-container,
+        .search-container {
+            text-align: center;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            max-width: 900px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: #004494;
+        }
+
+        .results-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 900px;
+            margin: 20px auto;
+        }
+
+        .doc {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #0056b3;
+            text-align: center;
+        }
+
+        .pat {
+            background-color: #333;
+            color: pink;
+            margin: 0 0 15px 0;
+            padding: 10px;
+            border-radius: 20px;
+            font-size: 1.2rem;
+            text-transform: capitalize;
+        }
+    </style>
+</head>
+
+<body ng-controller="hospitalCtrl">
+
+    <header>
+        <h1>HOSPITAL MANAGEMENT SYSTEM</h1>
+        <p>Patient Database</p>
+    </header>
+
+    <!-- Add New Patient Form -->
+    <div class="form-container">
+        <h3>Register New Patient</h3>
+        <input type="text" ng-model="newName" placeholder="Patient Name" required>
+        <input type="text" ng-model="newAge" placeholder="Age" style="width: 80px;" required>
+        <input type="text" ng-model="newDept" placeholder="Department (e.g. Cardiology)" required>
+        <button ng-click="savePatient()">Save to Database</button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input type="text" ng-model="searchText" placeholder="Search saved patients..." style="width: 300px;">
+    </div>
+
+    <!-- Display Patients from Database -->
+    <div class="results-container">
+        <div class="doc" ng-repeat="patient in patients | filter:searchText">
+            <h3 class="pat">{{ patient.name }}</h3>
+            <p><strong>Age: </strong>{{ patient.age }}</p>
+            <p><strong>Dept: </strong>{{ patient.department }}</p>
+        </div>
+    </div>
+
+    <script>
+        var app = angular.module('app', []);
+
+        app.controller('hospitalCtrl', function ($scope, $http) {
+            $scope.patients = [];
+
+            // 1. Fetch data from MongoDB on page load
+            $scope.loadPatients = function () {
+                $http.get('http://localhost:3000/patients')
+                    .then(function (response) {
+                        $scope.patients = response.data;
+                    })
+                    .catch(function (error) {
+                        console.error('Database fetch error:', error);
+                    });
+            };
+
+            // 2. Save new data to MongoDB
+            $scope.savePatient = function () {
+                if ($scope.newName && $scope.newAge) {
+                    var newPatientData = {
+                        name: $scope.newName,
+                        age: $scope.newAge,
+                        department: $scope.newDept
+                    };
+
+                    $http.post('http://localhost:3000/patients', newPatientData)
+                        .then(function (response) {
+                            // Add to view instantly
+                            $scope.patients.push(response.data);
+
+                            // Clear inputs
+                            $scope.newName = '';
+                            $scope.newAge = '';
+                            $scope.newDept = '';
+                        })
+                        .catch(function (error) {
+                            console.error('Database save error:', error);
+                        });
+                }
+            };
+
+            // Initialize by loading patients
+            $scope.loadPatients();
+        });
+    </script>
+</body>
+
+</html>

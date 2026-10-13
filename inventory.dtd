@@ -1,0 +1,7 @@
+<!ELEMENT inventory (product+)>
+<!ELEMENT product (name, price)>
+<!ATTLIST product
+    id ID #REQUIRED
+    category CDATA #IMPLIED>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT price (#PCDATA)>

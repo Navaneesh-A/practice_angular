@@ -1,0 +1,11 @@
+<!DOCTYPE movies [
+<!ELEMENT movies (movie+)>
+<!ELEMENT movie (title, director, genre, releaseYear)>
+<!ELEMENT title (#PCDATA) >
+<!ELEMENT director (#PCDATA) >
+<!ELEMENT genre (#PCDATA) >
+<!ELEMENT releaseYear (#PCDATA)>
+]>
+<movies>
+<movie><title>Inception</title><director>Nolan</director><genre>SF</genre><releaseYear>2010</releaseYear></movie>
+</movies>

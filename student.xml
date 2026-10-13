@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<!DOCTYPE student SYSTEM "student.dtd">
+<student>
+    <name>Sanjay</name>
+    <age>19</age>
+</student>
